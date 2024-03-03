@@ -1,0 +1,51 @@
+config:
+  name: match order when status is pending
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: match order when status is pending
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/match
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+    user_id_with_balance: ${ENV(asset_user_id_with_balance)}
+    asset: "MANTA"
+  parameters:
+    occupyUserId-matchUserId-exceptedResult:
+      - ["${user_id_with_balance}","${user_id_with_balance}", {'status': 'ERROR', 'type': 'GENERAL', 'code': '070002', 'errorData': 'illegal operation'}]
+teststeps:
+  - name: place order
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+    variables:
+      asset: ${asset}
+      price: 1
+      amount: 1
+      tradeType: BUY
+      exceptedResult: {'status':'OK'}
+      userId: ${user_id}
+    export:
+      - orderNo
+  - name: occupy order
+    testcase: testcases/premarket/open_orders/occupy/occupy_order.yaml
+    variables:
+      orderNo: ${orderNo}
+      userId: ${occupyUserId}
+      exceptedResult: {'status':'OK'}
+  - name: match order 
+    setup_hooks:
+      - ${run_sql_update($sqlInfo)}
+    testcase: testcases/premarket/open_orders/match_order/match_order.yaml
+    variables:
+      asset: ${asset}
+      orderNo: ${orderNo}
+      userId: ${matchUserId}
+      sqlInfo:
+        database: pre-market
+        sql: update open_order set order_status = 'PLACE_PENDING' where order_no = ${orderNo} and order_status = 'SUCCESS'
+      teardown_sqlInfo:
+        database: pre-market
+        sql: update open_order set order_status = 'SUCCESS' where order_no = ${orderNo} and order_status = 'PLACE_PENDING'
+    teardown_hooks:
+      - ${run_sql_update($teardown_sqlInfo)}

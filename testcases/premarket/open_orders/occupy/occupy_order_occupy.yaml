@@ -1,0 +1,50 @@
+config:
+  name: occupy order that alraedy occupied
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: occupy order that alraedy occupied
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/occupy
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+    user_id_no_balance: ${ENV(asset_user_id_no_balance)}
+    user_id_with_balance: ${ENV(asset_user_id_with_balance)}
+  parameters:
+      tradeType-occupyuserId-timeSleep-occupyUserId2-occupyexceptedResult:
+        - [SELL, "${user_id_with_balance}", 1, "${user_id_with_balance}", {"status": "OK"}]
+        - [BUY, "${user_id_with_balance}", 21, "${user_id_with_balance}", {"status": "OK"}]
+        - [SELL, "${user_id_with_balance}", 1, "10043264", { "status": "ERROR",
+                                                              "type": "GENERAL",
+                                                              "code": "070022",
+                                                              "errorData": "Unable to occupy"}
+          ]
+        - [SELL, "${user_id_with_balance}", 21, "10043264", {"status": "OK"}]
+teststeps:
+  - name: place order
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+    variables:
+      amount: 1
+      asset: MANTA
+      price: 1
+      tradeType: SELL
+      userId: ${user_id}
+      exceptedResult: {"status": "OK"}
+    export:
+      - orderNo
+  - name: occupy order others's order
+    testcase: testcases/premarket/open_orders/occupy/occupy_order.yaml
+    variables:
+      orderNo: ${orderNo}
+      userId: ${occupyuserId}
+      exceptedResult: {"status": "OK"} 
+  - name: occupy order that occupied
+    testcase: testcases/premarket/open_orders/occupy/occupy_order.yaml
+    setup_hooks:
+      - ${setup_sleep_n_second($timeSleep)}
+    variables:
+      orderNo: ${orderNo}
+      userId: ${occupyUserId2}
+      exceptedResult: ${occupyexceptedResult}

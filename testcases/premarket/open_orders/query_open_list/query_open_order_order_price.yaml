@@ -1,0 +1,49 @@
+config:
+  name: query open order order by price
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: query open order interface
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/list
+    author: 'august.l'
+  variables:
+    query_high_price_order_sql_info: 
+      sql: select price + 1 as price from open_order where asset = 'MANTA' order by price desc limit 1
+      columns: ["price"]
+      database: pre-market
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+    # price: ${run_sql_return_single_value($query_high_price_order_sql_info, true)}
+
+teststeps:
+  - name: 下单一个最高价格的订单
+    setup_hooks:
+      - price: ${run_sql_return_single_value($query_high_price_order_sql_info, true)}
+    variables:
+      asset: MANTA
+      amount: 1
+      price: ${price}
+      tradeType: SELL
+      userId: ${user_id}
+      exceptedResult: {"status": "OK"}
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+    export:
+      - orderId
+  - name: 按照订单降序查询open order list
+    variables:
+      payload: 
+        asset: MANTA
+        page: 1
+        rows: 1
+        sortColumn: "price"
+        sortOrder: "desc"
+      exceptedResult: {}
+      jmespath: "[0].id"
+    testcase: testcases/premarket/open_orders/query_open_list/query_open_order.yaml
+    export:
+      - orderList
+    teardown_hooks: 
+      - ${check_value($orderList,$jmespath,$orderId, 获得返回的第一个uid和下单的uid比较)}
+  
+    

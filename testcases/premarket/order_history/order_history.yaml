@@ -1,0 +1,37 @@
+config:
+  name: order history interface
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: order history interface
+    service: pre-market
+    controller: order-history-controller
+    url: /order/history/list
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+  parameters:
+    asset-userId-rows-page-sortColumn-sortOrder-exceptedResult:
+      # - ['MANTA', "${user_id}", 10, 1, 'price', 'DESC', {'status': 'OK'}]
+      - ['', "${user_id}", 10, 1, 'price', 'DESC', {'status': 'OK'}]
+      - ['MANTA', "", 10, 1, 'price', 'DESC', {'status': 'OK'}]
+teststeps:
+  - name: order history interface
+    request:
+      method: POST
+      url: /order/history/list
+      json:
+        body: 
+          asset: $asset
+          userId: $userId
+          rows: $rows
+          page: $page
+          sortColumn: $sortColumn
+          sortOrder: $sortOrder
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+        x-user-id: $userId
+    validate:
+      - eq: ["status_code", 200, "response.status_code == 200"]
+      - custom: ["compare_response", "body", "${exceptedResult}"]

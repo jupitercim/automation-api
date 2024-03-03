@@ -1,0 +1,43 @@
+config:
+  name: cancel order after place order
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: cancel order after place order
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/cancel
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+    user_id_with_balance: ${ENV(asset_user_id_with_balance)}
+  parameters:
+    amount-asset-price-tradeType-userId-exceptedResult:
+      - [1, MANTA, 1, SELL, "${user_id}", {"status": "OK"}]
+      - [1, MANTA, 1, BUY, "${user_id}",{"status": "OK"}]
+teststeps:
+  - name: place order
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+    export:
+      - orderNo
+  - name: occupy order
+    testcase: testcases/premarket/open_orders/occupy/occupy_order.yaml
+    variables:
+      orderNo: ${orderNo}
+      userId: ${user_id_with_balance}
+      exceptedResult: {'status': 'OK'}
+  - name: match order
+    testcase: testcases/premarket/open_orders/match_order/match_order.yaml
+    variables:
+      asset: $asset
+      orderNo: ${orderNo}
+      userId: ${user_id_with_balance}
+      exceptedResult: {'status': 'OK'}
+  - name: cancel order
+    testcase: testcases/premarket/open_orders/cancel_order/cancel_order.yaml
+    variables:
+      orderNo: ${orderNo}
+      userId: ${user_id}
+      exceptedResult: {"status": "ERROR","type": "GENERAL","code": "070012","errorData": "order not existed"}
+  
+    

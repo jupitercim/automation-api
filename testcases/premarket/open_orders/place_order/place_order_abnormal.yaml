@@ -1,0 +1,18 @@
+config:
+  name: place order abnormal test
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: place order abnormal test
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/place
+    author: 'august.l'
+  parameters:
+    amount-asset-price-tradeType-userId-exceptedResult:
+      - [22, MANTA, 1, SELL, "${ENV(asset_user_id)}", {'status':'OK'}]
+
+teststeps:
+  - name: place order
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+
+

@@ -1,0 +1,40 @@
+config:
+  name: Get asset list, check test flag
+  base_url: ${get_service_host(PRE-MARKET)}
+  marks: ['premarket', 'qa']
+  meta:
+    description: 'Get asset list, check test flag'
+    service: pre-market
+    controller: asset-controller
+    url: /asset/list
+    author: 'august.l'
+  variables:
+    asset_test_sql_info:
+      sql: select asset from asset_config order by id asc
+      columns: ["asset"]
+      database: pre-market
+    asset_not_test_sql_info:
+      sql: select asset from asset_config where test <> 1
+      columns: ["asset"]
+      database: pre-market
+    asset_test_sql_info_result: ${run_sql_return_list($asset_test_sql_info)} 
+    asset_not_test_sql_result: ${run_sql_return_list($asset_not_test_sql_info)} 
+  parameters:
+    userId-assetList-message:
+      - ['', $asset_not_test_sql_result, 'userId不传无法获取到test的asset']
+      - ['10049576', $asset_test_sql_info_result, '传入apollo配置的userId,可以获取到test的asset']
+      - ['330324', $asset_not_test_sql_result, '传入未配置的userId,无法获取test的asset']
+
+teststeps:
+  - name: Get asset list, check test flag
+    request:
+      method: POST
+      url: /asset/list
+      json:
+        body: 
+          userId: $userId
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+    validate:
+      - eq: ["body.data[*].asset", $assetList, $message]

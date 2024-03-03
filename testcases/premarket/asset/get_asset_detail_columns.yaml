@@ -1,0 +1,30 @@
+config:
+  name: Get pre market asset columns
+  base_url: ${get_service_host(PRE-MARKET)}
+  marks: ['premarket', 'qa']
+  meta:
+    description: Get pre market asset columns
+    service: pre-market
+    controller: asset-controller
+    url: /asset/list
+    author: 'august.l'
+  variables:
+    response_columns: ["asset", "assetAlias", "assetDecimal", 
+                        "priceDecimal", "makerPledgeRate", "takerPledgeRate",
+                        "makerFeeRate", "takerFeeRate", "settleTime",
+                        "tradeStartTime", "tradeEndTime", "description",
+                        "logoUrl", "projectUrl", "lpUrl", "test"
+                      ]
+teststeps:
+  - name: Get pre market asset columns
+    request:
+      method: POST
+      url: /asset/list
+      json:
+        body: 
+          asset: MANTA
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+    validate:
+      - eq: ["body.data[0] | keys(@)", $response_columns, "返回字段应该包含所有字段"]

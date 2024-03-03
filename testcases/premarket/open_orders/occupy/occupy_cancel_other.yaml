@@ -1,0 +1,44 @@
+config:
+  name: occupy cancel myself
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: occupy cancel myself
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/occupy/cancel
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+    user_id_with_balance: ${ENV(asset_user_id_with_balance)}
+  parameters:
+    occupyUserId-canceluserId-exceptedResult:
+      - ["${user_id_with_balance}", "${user_id_with_balance}",{'status': 'OK'}]
+      - ["${user_id_with_balance}", "${user_id}",{"status": "ERROR",
+          "type": "GENERAL",
+          "code": "070002",
+          "errorData": "illegal operation"}]
+teststeps:
+  - name: place order
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+    variables:
+      asset: MANTA
+      price: 1
+      amount: 1
+      tradeType: BUY
+      exceptedResult: {'status':'OK'}
+      userId: ${user_id}
+    export:
+      - orderNo
+  - name: occupy order order
+    testcase: testcases/premarket/open_orders/occupy/occupy_order.yaml
+    variables:
+      orderNo: ${orderNo}
+      userId: ${occupyUserId}
+      exceptedResult: {"status": "OK"}
+  - name: occupy cancel 
+    testcase: testcases/premarket/open_orders/occupy/occupy_cancel.yaml
+    variables:
+      orderNo: ${orderNo}
+      userId: ${canceluserId}
+      exceptedResult: ${exceptedResult}

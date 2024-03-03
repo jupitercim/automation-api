@@ -1,0 +1,41 @@
+config:
+  name: cancel order interface
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: cancel order interface
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/cancel
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+  parameters:
+    orderNo-userId-exceptedResult:
+      - [0, "${user_id}", {"status": "ERROR",
+          "type": "GENERAL",
+          "code": "070012",
+          "errorData": "order not existed"}]
+      - ['', "${user_id}", {"status": "ERROR",
+                              "type": "VALID",
+                              "code": "000002",
+                              "errorData": {
+                                  "body.orderNo": "must not be blank"
+                              }
+        }]
+teststeps:
+  - name: cancel order 
+    request:
+      method: POST
+      url: /openOrder/cancel
+      json:
+        body: 
+          orderNo: $orderNo
+          userId: $userId
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+        x-user-id: ${x_user_id}
+    validate:
+      - eq: ["status_code", 200, "response.status_code == 200"]
+      - custom: ["compare_response", "body", "${exceptedResult}"]

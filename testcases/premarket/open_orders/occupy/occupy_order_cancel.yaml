@@ -1,0 +1,36 @@
+config:
+  name: occupy order that alraedy cancel
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: occupy order that alraedy occupied
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/occupy
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+teststeps:
+  - name: place order
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+    variables:
+      amount: 1
+      asset: MANTA
+      price: 1
+      tradeType: SELL
+      userId: ${user_id}
+      exceptedResult: {"status": "OK"}
+    export:
+      - orderNo
+  - name: cancel order
+    testcase: testcases/premarket/open_orders/cancel_order/cancel_order.yaml
+    variables:
+      orderNo: ${orderNo}
+      userId: ${user_id}
+      exceptedResult: {"status": "OK"}
+  - name: occupy order that canceled
+    testcase: testcases/premarket/open_orders/occupy/occupy_order.yaml
+    variables:
+      orderNo: ${orderNo}
+      userId: ${user_id}
+      exceptedResult: {'status': 'ERROR', 'type': 'GENERAL', 'code': '070011', 'errorData': 'order not found'}

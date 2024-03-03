@@ -1,0 +1,36 @@
+config:
+  name: match order interface
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: match order interface
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/match
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+  parameters:
+    asset-orderNo-userId-exceptedResult:
+      - [MANTA, 0, "${user_id}", {"status":"ERROR","type":"GENERAL","code":"070011","errorData":"order not found"}]
+      - [MANTA, '', "${user_id}", {"status":"ERROR","type":"GENERAL","code":"070011","errorData":"order not found"}]
+      - ['', 0, '', {'status': 'ERROR', 'type': 'GENERAL', 'code': '070013', 'errorData': 'pre-market closed or not available'}]
+teststeps:
+  - name: match order 
+    request:
+      method: POST
+      url: /openOrder/match
+      json:
+        body: 
+          asset: $asset
+          orderNo: $orderNo
+          userId: $userId
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+        x-user-id: ${x_user_id}
+    extract:
+      - data: body.data
+    validate:
+      - eq: ["status_code", 200, "response.status_code == 200"]
+      - custom: ["compare_response", "body", "${exceptedResult}"]

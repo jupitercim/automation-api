@@ -1,0 +1,41 @@
+config:
+  name: occupy order that status is in pending
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: occupy order that status is in pending
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/occupy
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+    user_id_with_balance: ${ENV(asset_user_id_with_balance)}
+teststeps:
+  - name: place order
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+    variables:
+      amount: 1
+      asset: MANTA
+      price: 1
+      tradeType: SELL
+      userId: ${user_id}
+      exceptedResult: {"status": "OK"}
+    export:
+      - orderNo
+  - name: occupy order that status not success
+    setup_hooks:
+      - ${run_sql_update($sqlInfo)}
+    testcase: testcases/premarket/open_orders/occupy/occupy_order.yaml
+    variables:
+      sqlInfo:
+        database: pre-market
+        sql: update open_order set order_status = 'PLACE_PENDING' where order_no = ${orderNo} and order_status = 'SUCCESS'
+      teardown_sqlInfo:
+        database: pre-market
+        sql: update open_order set order_status = 'SUCCESS' where order_no = ${orderNo} and order_status = 'PLACE_PENDING'
+      orderNo: ${orderNo}
+      userId: ${user_id_with_balance}
+      exceptedResult: {'status': 'ERROR', 'type': 'GENERAL', 'code': '070002',"errorData": "illegal operation"}
+    teardown_hooks:
+      - ${run_sql_update($teardown_sqlInfo)}

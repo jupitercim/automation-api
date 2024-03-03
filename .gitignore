@@ -1,0 +1,19 @@
+reports/
+*.so
+.vscode/
+.idea/
+.DS_Store
+output/
+__pycache__/
+*.pyc
+.python-version
+logs/
+log/
+har/
+**/*_test.py
+**/__init__.py
+results/
+
+# plugin
+debugtalk.bin
+debugtalk.so

@@ -1,0 +1,68 @@
+config:
+  name: query open order interface
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: query open order interface
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/list
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+  parameters:
+    description-payload-exceptedResult:
+      - ["查询存在asset的open order list",{
+          "asset": "MANTA",
+          "page": 1,
+          "rows": 10,
+        },{
+          "status": "OK",
+          "type": "GENERAL",
+          "code": "000000000",
+        }]    
+      - ["查询不存在asset的open order list",{
+          "asset": "MANTA1",
+          "page": 0,
+          "rows": 0,
+        },{
+          "status": "OK",
+          "type": "GENERAL",
+          "code": "000000000",
+        }]  
+      - ["查询open order 分页",{
+          "asset": "MANTA",
+          "page": 1,
+          "rows": 2
+        },{
+          "status": "OK",
+          "type": "GENERAL",
+          "code": "000000000",
+        }]  
+      - ["查询open order 分页",{
+          "asset": "MANTA",
+          "page": 2,
+          "rows": 2
+        },{
+          "status": "OK",
+          "type": "GENERAL",
+          "code": "000000000",
+        }] 
+teststeps:
+  - name: ${description}
+    request:
+      method: POST
+      url: /openOrder/list
+      json:
+        body: $payload
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+        x-user-id: ${x_user_id}
+    extract:
+      - total: "body.data.total"
+      - orderList: "body.data.records"
+    validate:
+      - eq: ["status_code", 200, "response.status_code == 200"]
+      - custom: ["compare_response", "body", "${exceptedResult}"]
+      - eq: ["body.data.records|length(@)", "${get_value_from_map($payload, rows)}", "返回的记录数与请求数一致"]

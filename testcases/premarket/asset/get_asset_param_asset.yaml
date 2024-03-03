@@ -1,0 +1,37 @@
+config:
+  name: Get asset list, check when set asset
+  base_url: ${get_service_host(PRE-MARKET)}
+  marks: ['premarket', 'qa']
+  meta:
+    description: Get asset list, check when set asset
+    service: pre-market
+    controller: asset-controller
+    url: /asset/list
+    author: 'august.l'
+  variables:
+    asset_not_test_sql_info:
+      sql: select asset from asset_config where test <> 1 order by id asc
+      columns: ["asset"]
+      database: pre-market  
+    asset_not_test_sql_info_result: ${run_sql_return_list($asset_not_test_sql_info)}     
+  parameters:
+    asset-userId-assetList-message:
+      - ['', '', "${asset_not_test_sql_info_result}", 'asset不传返回所有非test的asset']
+      - ['MANTA', '', ["MANTA"], '传入MANTA，返回指定的asset详情']
+      - ['WRONG_ASSET', '', [], '传入错误的asset，返回空']
+      - ['AUGUST', '', [], '传入AUGUST，但不传入白名单USERID， 返回空']
+
+teststeps:
+  - name: Get asset list, check when set asset
+    request:
+      method: POST
+      url: /asset/list
+      json:
+        body: 
+          asset: $asset
+          userId: $userId
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+    validate:
+      - eq: ["body.data[*].asset", $assetList, $message]

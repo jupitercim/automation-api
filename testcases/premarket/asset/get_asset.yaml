@@ -1,0 +1,30 @@
+config:
+  name: Get asset list
+  base_url: ${get_service_host(PRE-MARKET)}
+  marks: ['premarket', 'qa']
+  meta:
+    description: 'Get asset list, check test flag'
+    service: pre-market
+    controller: asset-controller
+    url: /asset/list
+    author: 'august.l'
+  parameters:
+    userId-asset:
+      - ['0', "MANTA"]
+teststeps:
+  - name: Get asset list
+    request:
+      method: POST
+      url: /asset/list
+      json:
+        body: 
+          userId: $userId
+          asset: $asset
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+    extract:
+      - assets_info: body.data
+      - first_asset_info: body.data[0]
+    validate:
+      - eq: ["status_code", 200, "response.status_code == 200"]

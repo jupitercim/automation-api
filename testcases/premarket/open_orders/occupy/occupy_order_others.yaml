@@ -1,0 +1,34 @@
+config:
+  name: occupy order others order
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: occupy order self order
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/occupy
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+    user_id_no_balance: ${ENV(asset_user_id_no_balance)}
+    user_id_with_balance: ${ENV(asset_user_id_with_balance)}
+  setup_hooks:
+    - ${printmgs(1)}
+  parameters:
+      amount-asset-price-tradeType-userId-exceptedResult-occupyuserId-occupyexceptedResult:
+        - [1, MANTA, 1, SELL, "${user_id}", {"status": "OK"}, "${user_id_no_balance}", {"status": "ERROR"}]
+        - [1, MANTA, 1, BUY, "${user_id}",{"status": "OK"}, "${user_id_no_balance}", {"status": "ERROR"}]
+        - [1, MANTA, 1, SELL, "${user_id}", {"status": "OK"}, "${user_id_with_balance}", {"status": "OK"}]
+        - [1, MANTA, 1, BUY, "${user_id}",{"status": "OK"}, "${user_id_with_balance}", {"status": "OK"}]
+
+teststeps:
+  - name: place order
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+    export:
+      - orderNo
+  - name: occupy order others's order
+    testcase: testcases/premarket/open_orders/occupy/occupy_order.yaml
+    variables:
+      orderNo: ${orderNo}
+      userId: ${occupyuserId}
+      exceptedResult: ${occupyexceptedResult}

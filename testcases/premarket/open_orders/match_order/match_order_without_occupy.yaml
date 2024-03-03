@@ -1,0 +1,34 @@
+config:
+  name: match order interface
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: match order interface
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/match
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+    user_id_with_balance: ${ENV(asset_user_id_with_balance)}
+    asset: "MANTA"
+      
+teststeps:
+  - name: place order
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+    variables:
+      asset: ${asset}
+      price: 1
+      amount: 1
+      tradeType: BUY
+      exceptedResult: {'status':'OK'}
+      userId: ${user_id}
+    export:
+      - orderNo
+  - name: match order 
+    testcase: testcases/premarket/open_orders/match_order/match_order.yaml
+    variables:
+      asset: ${asset}
+      orderNo: ${orderNo}
+      userId: ${user_id_with_balance}
+      exceptedResult: {"status":"ERROR"}

@@ -1,0 +1,85 @@
+config:
+  name: place order interface
+  base_url: ${get_service_host(PRE-MARKET)}
+  meta:
+    description: place order interface
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/place
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+  parameters:
+    amount-asset-price-tradeType-userId-exceptedResult:
+      - [1, MANTA, 1, SELL, "${user_id}", {   
+         "status": "OK",
+          "type": "GENERAL",
+          "code": "000000000",
+          "errorData": null
+          }]
+      # - [0, MANTA, 1, BUY, "${user_id}",{
+      #       "status": "ERROR",
+      #       "type": "GENERAL",
+      #       "code": "000002",
+      #       "errorData": "illegal parameter"
+      #   }]
+      # - [-1, MANTA, 1, SELL, "${user_id}",{
+      #       "status": "ERROR",
+      #       "type": "GENERAL",
+      #       "code": "000002",
+      #       "errorData": "illegal parameter"
+      #   }]
+      # - [1, MANTA1, 1, SELL, "${user_id}",{
+      #       "status": "ERROR",
+      #       "type": "GENERAL",
+      #       "code": "070013",
+      #       "errorData": "pre-market closed or not available"
+      #   }]
+      # - [1, MANTA, 0, SELL, "${user_id}",{
+      #       "status": "ERROR",
+      #       "type": "GENERAL",
+      #       "code": "000002",
+      #       "errorData": "illegal parameter"
+      #   }]
+      # - [1, MANTA, -1, SELL, "${user_id}",{
+      #       "status": "ERROR",
+      #       "type": "GENERAL",
+      #       "code": "000002",
+      #       "errorData": "illegal parameter"
+      #   }]
+      # - [1, MANTA, 1, BUY, "${user_id}",{   
+      #    "status": "OK",
+      #     "type": "GENERAL",
+      #     "code": "000000000",
+      #     "errorData": null
+      #   }]
+      # - [1, MANTA, 1, FUCK, "${user_id}", {
+      #       "status": "ERROR",
+      #       "type": "VALID",
+      #       "code": "000002",
+      #       "errorData": "illegal parameter",
+      #   }]        
+teststeps:
+  - name: place order 
+    request:
+      method: POST
+      url: /openOrder/place
+      json:
+        body: 
+          amount: $amount
+          asset: $asset
+          price: $price
+          tradeType: $tradeType
+          userId: $userId
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+        x-user-id: ${x_user_id}
+    extract:
+      - orderId: "body.data.id"
+      - data: "body.data"
+      - orderNo: "body.data.orderNo"
+    validate:
+      - eq: ["status_code", 200, "response.status_code == 200"]
+      - custom: ["compare_response", "body", "${exceptedResult}"]
