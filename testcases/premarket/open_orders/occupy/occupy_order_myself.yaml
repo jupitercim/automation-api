@@ -12,8 +12,8 @@ config:
     user_id: ${ENV(asset_user_id)}
   parameters:
       amount-asset-price-tradeType-userId-exceptedResult:
-        - [1, MANTA, 1, SELL, "${user_id}", {"status": "OK"}]
-        - [1, MANTA, 1, BUY, "${user_id}",{"status": "OK"}]
+        - [11, MANTA, 1, SELL, "${user_id}", {"status": "OK"}]
+        - [11, MANTA, 1, BUY, "${user_id}",{"status": "OK"}]
 
 teststeps:
   - name: place order

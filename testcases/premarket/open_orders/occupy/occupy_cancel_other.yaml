@@ -23,7 +23,7 @@ teststeps:
     testcase: testcases/premarket/open_orders/place_order/place_order.yaml
     variables:
       asset: MANTA
-      price: 1
+      price: 11
       amount: 1
       tradeType: BUY
       exceptedResult: {'status':'OK'}

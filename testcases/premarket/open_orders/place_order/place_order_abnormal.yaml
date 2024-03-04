@@ -7,9 +7,13 @@ config:
     controller: open-order-controller
     url: /openOrder/place
     author: 'august.l'
+  variables:
+    user_id_no_balance: ${ENV(asset_user_id_no_balance)}
+    user_id_with_balance: ${ENV(asset_user_id_with_balance)}
   parameters:
     amount-asset-price-tradeType-userId-exceptedResult:
-      - [22, MANTA, 1, SELL, "${ENV(asset_user_id)}", {'status':'OK'}]
+      - [22, MANTA, 1, SELL, "${user_id_no_balance}", {"status": "ERROR","type": "GENERAL","code": "070010","errorData": "user balance insufficient"}]
+      - [2, MANTA, 1, SELL, "${user_id_with_balance}", {'status': 'ERROR', 'type': 'GENERAL', 'code': '070024'}]
 
 teststeps:
   - name: place order

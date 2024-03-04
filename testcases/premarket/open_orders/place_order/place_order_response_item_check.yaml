@@ -12,8 +12,8 @@ config:
     user_id: ${ENV(asset_user_id)}
   parameters:
     amount-asset-price-tradeType-userId-exceptedResult:
-      - [1, MANTA, 1, SELL, "${user_id}", {}]
-      - [1, MANTA, 1, BUY, "${user_id}",{}]
+      - [11, MANTA, 1, SELL, "${user_id}", {}]
+      - [1, MANTA, 11, BUY, "${user_id}",{}]
 teststeps:
   - name: 获取asset的信息
     testcase: testcases/premarket/asset/get_asset.yaml

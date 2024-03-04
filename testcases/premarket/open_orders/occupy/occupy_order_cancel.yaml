@@ -16,7 +16,7 @@ teststeps:
     variables:
       amount: 1
       asset: MANTA
-      price: 1
+      price: 11
       tradeType: SELL
       userId: ${user_id}
       exceptedResult: {"status": "OK"}

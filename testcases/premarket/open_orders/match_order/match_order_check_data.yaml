@@ -14,8 +14,8 @@ config:
     asset: "MANTA"
   parameters:
     price-amount-tradeType:
-      - [1, 1, BUY]
-      - [2, 2, SELL]
+      - [11, 1, BUY]
+      - [11, 2, SELL]
 
 teststeps:
   - name: get asset info

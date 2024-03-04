@@ -12,54 +12,49 @@ config:
     user_id: ${ENV(asset_user_id)}
   parameters:
     amount-asset-price-tradeType-userId-exceptedResult:
-      - [1, MANTA, 1, SELL, "${user_id}", {   
+      - [1, MANTA, 11, SELL, "${user_id}", {"status": "OK"}]
+      - [0, MANTA, 11, BUY, "${user_id}",{
+            "status": "ERROR",
+            "type": "GENERAL",
+            "code": "000002",
+            "errorData": "illegal parameter"
+        }]
+      - [-1, MANTA, 11, SELL, "${user_id}",{
+            "status": "ERROR",
+            "type": "GENERAL",
+            "code": "000002",
+            "errorData": "illegal parameter"
+        }]
+      - [11, MANTA1, 1, SELL, "${user_id}",{
+            "status": "ERROR",
+            "type": "GENERAL",
+            "code": "070013",
+            "errorData": "pre-market closed or not available"
+        }]
+      - [11, MANTA, 0, SELL, "${user_id}",{
+            "status": "ERROR",
+            "type": "GENERAL",
+            "code": "000002",
+            "errorData": "illegal parameter"
+        }]
+      - [11, MANTA, -1, SELL, "${user_id}",{
+            "status": "ERROR",
+            "type": "GENERAL",
+            "code": "000002",
+            "errorData": "illegal parameter"
+        }]
+      - [11, MANTA, 1, BUY, "${user_id}",{   
          "status": "OK",
           "type": "GENERAL",
           "code": "000000000",
           "errorData": null
-          }]
-      # - [0, MANTA, 1, BUY, "${user_id}",{
-      #       "status": "ERROR",
-      #       "type": "GENERAL",
-      #       "code": "000002",
-      #       "errorData": "illegal parameter"
-      #   }]
-      # - [-1, MANTA, 1, SELL, "${user_id}",{
-      #       "status": "ERROR",
-      #       "type": "GENERAL",
-      #       "code": "000002",
-      #       "errorData": "illegal parameter"
-      #   }]
-      # - [1, MANTA1, 1, SELL, "${user_id}",{
-      #       "status": "ERROR",
-      #       "type": "GENERAL",
-      #       "code": "070013",
-      #       "errorData": "pre-market closed or not available"
-      #   }]
-      # - [1, MANTA, 0, SELL, "${user_id}",{
-      #       "status": "ERROR",
-      #       "type": "GENERAL",
-      #       "code": "000002",
-      #       "errorData": "illegal parameter"
-      #   }]
-      # - [1, MANTA, -1, SELL, "${user_id}",{
-      #       "status": "ERROR",
-      #       "type": "GENERAL",
-      #       "code": "000002",
-      #       "errorData": "illegal parameter"
-      #   }]
-      # - [1, MANTA, 1, BUY, "${user_id}",{   
-      #    "status": "OK",
-      #     "type": "GENERAL",
-      #     "code": "000000000",
-      #     "errorData": null
-      #   }]
-      # - [1, MANTA, 1, FUCK, "${user_id}", {
-      #       "status": "ERROR",
-      #       "type": "VALID",
-      #       "code": "000002",
-      #       "errorData": "illegal parameter",
-      #   }]        
+        }]
+      - [1, MANTA, 11, FUCK, "${user_id}", {
+            "status": "ERROR",
+            "type": "VALID",
+            "code": "000002",
+            "errorData": "illegal parameter",
+        }]        
 teststeps:
   - name: place order 
     request:

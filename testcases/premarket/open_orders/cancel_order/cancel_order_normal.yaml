@@ -14,7 +14,7 @@ config:
     amount-asset-price-tradeType-userId-exceptedResult-cancelExceptedResult:
       # - [1, MANTA, 1, SELL, "${user_id}", {"status": "OK"}, {"status": "OK"}]
       # - [1, MANTA, 1, BUY, "${user_id}",{"status": "OK"},{"status": "OK"}]
-      - [1, MANTA, 1, BUY, 10043477,{"status": "OK"}, {"status": "ERROR",
+      - [11, MANTA, 1, BUY, 10043477,{"status": "OK"}, {"status": "ERROR",
           "type": "GENERAL",
           "code": "070012",
           "errorData": "order not existed"}]

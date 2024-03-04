@@ -16,10 +16,10 @@ config:
     - ${printmgs(1)}
   parameters:
       amount-asset-price-tradeType-userId-exceptedResult-occupyuserId-occupyexceptedResult:
-        - [1, MANTA, 1, SELL, "${user_id}", {"status": "OK"}, "${user_id_no_balance}", {"status": "ERROR"}]
-        - [1, MANTA, 1, BUY, "${user_id}",{"status": "OK"}, "${user_id_no_balance}", {"status": "ERROR"}]
-        - [1, MANTA, 1, SELL, "${user_id}", {"status": "OK"}, "${user_id_with_balance}", {"status": "OK"}]
-        - [1, MANTA, 1, BUY, "${user_id}",{"status": "OK"}, "${user_id_with_balance}", {"status": "OK"}]
+        - [11, MANTA, 1, SELL, "${user_id}", {"status": "OK"}, "${user_id_no_balance}", {"status": "ERROR"}]
+        - [11, MANTA, 1, BUY, "${user_id}",{"status": "OK"}, "${user_id_no_balance}", {"status": "ERROR"}]
+        - [11, MANTA, 1, SELL, "${user_id}", {"status": "OK"}, "${user_id_with_balance}", {"status": "OK"}]
+        - [11, MANTA, 1, BUY, "${user_id}",{"status": "OK"}, "${user_id_with_balance}", {"status": "OK"}]
 
 teststeps:
   - name: place order

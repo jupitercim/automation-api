@@ -13,8 +13,8 @@ config:
     user_id_with_balance: ${ENV(asset_user_id_with_balance)}
   parameters:
     amount-asset-price-tradeType-userId-exceptedResult:
-      - [1, MANTA, 1, SELL, "${user_id}", {"status": "OK"}]
-      - [1, MANTA, 1, BUY, "${user_id}",{"status": "OK"}]
+      - [11, MANTA, 1, SELL, "${user_id}", {"status": "OK"}]
+      - [11, MANTA, 1, BUY, "${user_id}",{"status": "OK"}]
 teststeps:
   - name: place order
     testcase: testcases/premarket/open_orders/place_order/place_order.yaml
