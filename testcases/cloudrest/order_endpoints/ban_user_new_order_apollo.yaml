@@ -1,0 +1,55 @@
+config:
+  name: open api new order
+  base_url: ${get_service_host(CLOUD-REST)}
+  marks: ['cloud-rest', 'qa']
+  meta:
+    description: open api new order
+    service: cloud-rest
+    controller: order endpoint
+    url: /api/v1/order
+    author: 'august.l'
+  variables:
+    api_key: 58A91257465ADF2A54884A9913681B3B64290E68E038252CAA7C3774EC504799
+    api_secret: F08663E01781E212D4721EB35101B96C69D1EB4FB60D4C2B6D47747E6305E399  
+  parameters:
+    desc-params-exceptedResult-status_code:
+      - ["ban user 下limit单", 
+          {"symbol": "BTCUSDT",
+            "side": "BUY",
+            "type": "LIMIT",
+            "quantity": 0.001,
+            "price": "66150.8",
+            "timeInForce": "GTC",
+            "newClientOrderId": "${get_tran_id()}",
+          }, {"code": -1020,"msg": "This operation is not supported."}, 400]
+      - ["ban user 下 market单", 
+          {"side":"SELL",
+            "symbol":"BTCUSDT",
+            "quantity":"1",
+            "type":"MARKET",
+            "newClientOrderId": "${get_tran_id()}",
+          }, {"code": -1020,"msg": "This operation is not supported."}, 400]
+      - ["ban user 下 stop-limit", 
+          {"side":"SELL",
+            "symbol":"BTCUSDT",
+            "quantity":"1",
+            "type":"STOP_LOSS_LIMIT",
+            "stopPrice":"62228.3",
+            "price":"62228.3",
+            "timeInForce":"GTC",
+            "newClientOrderId": "${get_tran_id()}",
+          }, {"code": -1020,"msg": "This operation is not supported."}, 400]
+teststeps:
+  - name: 获取用户信息
+    setup_hooks:
+      - ${open_api_setup_hooks($request, $params,$api_secret)}
+    request:
+      method: POST
+      url: /api/v1/order
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+        X-MBX-APIKEY: $api_key
+    validate:
+      - eq: ["status_code", $status_code]
+      - custom: ["compare_response", "body", "${exceptedResult}"]

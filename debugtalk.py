@@ -21,10 +21,19 @@ def get_service_host(service_name, envflag="normal", eurake_url="http://internal
     import asyncio
     application = asyncio.run(eureka.get_application(eurake_url,service_name))
     # 这里还需要判断，返回想要的实例
+    res = ""
     for instance in application.instances:
-        if instance.metadata.get("envflag") == envflag:
-            return "http://" + instance.hostName + ":" + str(instance.port.port)
-    raise Exception(f"Can't find service {service_name} with envflag {envflag} in eureka")
+        logger.info(f"august get_service_host {instance.instanceId} ")
+        if instance.status != "UP":
+            continue
+        if instance.metadata and instance.metadata.get("envflag") == envflag:
+            return "http://" + instance.instanceId
+        else:
+            res = "http://" + instance.instanceId
+    if res != "":
+        return res
+    else:
+        raise Exception(f"Can't find service {service_name} with envflag {envflag} in eureka")
 
 
 def compare_response(response, expected, message="reponse != expected"):
@@ -131,8 +140,39 @@ def check_value_dics(response, jmes_path_res, value, jmes_path_value):
     assert response_res == value_res, f"expect {value_res}, but got {response_res}"
 
 
+"""open api tools
 """
-"""
+def get_tran_id():
+    import random
+    return str(int(time.time()*1000)) + str(random.randint(1000, 9999))
+
+def generate_open_api_url(params, secret):
+    import hashlib
+    import hmac
+    params = generate_open_api_params(params)
+    param_str = ''
+    for key in params.keys():
+        param_str += f"&{key}={params[key]}"
+    param_str = param_str[1:]
+    # sign = hashlib.sha256(param_str.encode('utf-8')).hexdigest()
+    signature = hmac.new(secret.encode('utf-8'), param_str.encode('utf-8'), digestmod=hashlib.sha256).hexdigest()
+
+    param_str = param_str + "&signature=" + signature
+    params["signature"] = signature
+    return param_str, params
+
+def generate_open_api_params(params):
+    if "timestamp" not in params:
+        params["timestamp"] = int(time.time()*1000)
+    
+    return params
+
+def open_api_setup_hooks(request, params, secret):
+    param_str, params = generate_open_api_url(params, secret)
+    # request["url"] = request["url"] + "?" + param_str
+    request["params"] = params
+    return request
+
 def setup_sleep_n_second(n):
     time.sleep(n)
 

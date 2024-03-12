@@ -1,0 +1,31 @@
+config:
+  name: 被禁用用户下单
+  base_url: ${get_service_host(CLOUD-MGS-SPOT)}
+  marks: ['premarket', 'qa', 'noparallelized']  
+  meta:
+    description: place order success check balance
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/place
+    author: 'august.l'
+  variables:
+    user_id: "10043264"
+  parameters:
+    desc-payload-exceptedResult:
+      - ["ban user下limit单", {"side":"SELL","symbol":"BTCUSDT","quantity":"1","price":"62228.3","type":"LIMIT","timeInForce":"GTC"},
+         {"code": "989216","message": "Failed to place an order: Trading disabled."}]
+      - ["ban user下market单", {"side":"SELL","symbol":"BTCUSDT","quantity":"1","type":"MARKET"},
+         {"code": "989216","message": "Failed to place an order: Trading disabled."}]
+      - ["ban user下stop limit单", {"side":"SELL","symbol":"BTCUSDT","quantity":"1","type":"STOP_LOSS_LIMIT","stopPrice":"62228.3","price":"62228.3","timeInForce":"GTC"},
+         {"code": "989216","message": "Failed to place an order: Trading disabled."}]
+      
+teststeps:
+  # - name: 禁止用户现货功能
+
+  - name: $desc
+    testcase: testcases/api/cloud_mgs_spot/place.yaml
+    variables:
+      user_id: ${user_id}
+      payload: $payload
+      exceptedResult: $exceptedResult
+  # - name: 恢复用户现货功能

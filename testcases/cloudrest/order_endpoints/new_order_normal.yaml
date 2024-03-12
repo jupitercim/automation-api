@@ -1,0 +1,53 @@
+config:
+  name: open api new order
+  base_url: ${get_service_host(CLOUD-REST)}
+  marks: ['cloud-rest', 'qa']
+  meta:
+    description: open api new order
+    service: cloud-rest
+    controller: order endpoint
+    url: /api/v1/order
+    author: 'august.l'
+  parameters:
+    desc-api_key-api_secret-params-exceptedResult-status_code:
+      # limit order 10049605
+      - ["10049576下limit单", 2E95C18D61F046F43D6DC8071331B05B1FC9405B8A8E883ADDA7C3C12D0FE7B4, F915D9DA94435D3A2C7EA00D290E6F7E2D34E5814559A8B7BAD43966FA799F93, 
+          {"symbol": "BTCUSDT",
+            "side": "BUY",
+            "type": "LIMIT",
+            "quantity": 0.001,
+            "price": "66150.8",
+            "timeInForce": "GTC",
+            "newClientOrderId": "${get_tran_id()}",
+          }, {"status": "NEW"}, 200]
+      - ["10049576下market单", 2E95C18D61F046F43D6DC8071331B05B1FC9405B8A8E883ADDA7C3C12D0FE7B4, F915D9DA94435D3A2C7EA00D290E6F7E2D34E5814559A8B7BAD43966FA799F93, 
+          {"side":"SELL",
+            "symbol":"BTCUSDT",
+            "quantity":"0.001",
+            "type":"MARKET",
+            "newClientOrderId": "${get_tran_id()}",
+          }, {"status": "NEW"}, 200]
+      - ["10049576下stop-limit单", 2E95C18D61F046F43D6DC8071331B05B1FC9405B8A8E883ADDA7C3C12D0FE7B4, F915D9DA94435D3A2C7EA00D290E6F7E2D34E5814559A8B7BAD43966FA799F93, 
+          {"side":"SELL",
+            "symbol":"BTCUSDT",
+            "quantity":"0.001",
+            "type":"STOP_LOSS_LIMIT",
+            "stopPrice":"68228.3",
+            "price":"62228.3",
+            "timeInForce":"GTC",
+            "newClientOrderId": "${get_tran_id()}",
+          }, {"status": "NEW"}, 200]          
+teststeps:
+  - name: $desc
+    setup_hooks:
+      - ${open_api_setup_hooks($request, $params,$api_secret)}
+    request:
+      method: POST
+      url: /api/v1/order
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+        X-MBX-APIKEY: $api_key
+    validate:
+      - eq: ["status_code", $status_code]
+      - custom: ["compare_response", "body", "${exceptedResult}"]

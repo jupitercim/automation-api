@@ -1,0 +1,36 @@
+config:
+  name: open api new order
+  base_url: ${get_service_host(CLOUD-REST)}
+  marks: ['cloud-rest', 'qa']
+  meta:
+    description: open api new order
+    service: cloud-rest
+    controller: order endpoint
+    url: /api/v1/order
+    author: 'august.l'    
+  parameters:
+    desc-api_key-api_secret-params-exceptedResult-status_code:
+      # limit order 10049605
+      - ["10049605余额不足", A3D087ABF9527FEADFD8784ADA99ED803A14E08F3DAF9AB5AB80384ADB54F973, 6D7F7156DE607A6AE94531FE33A49A32DDAAFF5C8889F520DD317F49D3228BD2, 
+          {"symbol": "BTCUSDT",
+            "side": "BUY",
+            "type": "LIMIT",
+            "quantity": 0.001,
+            "price": "66150.8",
+            "timeInForce": "GTC",
+            "newClientOrderId": "${get_tran_id()}",
+          }, {"code": -2018,"msg": "Balance is insufficient."}, 400]
+teststeps:
+  - name: 获取用户信息
+    setup_hooks:
+      - ${open_api_setup_hooks($request, $params,$api_secret)}
+    request:
+      method: POST
+      url: /api/v1/order
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+        X-MBX-APIKEY: $api_key
+    validate:
+      - eq: ["status_code", $status_code]
+      - custom: ["compare_response", "body", "${exceptedResult}"]

@@ -1,0 +1,29 @@
+config:
+  name: 现货下单接口
+  base_url: ${get_service_host(CLOUD-MGS-SPOT)}
+  marks: ['cloud-mgs-spot', 'qa']
+  meta:
+    description: 现货下单接口
+    service: cloud-mgs-spot
+    controller: order-controller
+    url: /v1/private/mbxgateway/order/place
+    author: 'august.l'    
+  variables:
+    user_id: ${ENV(asset_user_id)}
+    env_flag: normal
+    payload: {"side":"SELL","symbol":"BTCUSDT","quantity":"1","price":"62228.3","type":"LIMIT","timeInForce":"GTC"}
+    exceptedResult: {}       
+teststeps:
+  - name: 现货下单接口
+    request:
+      method: POST
+      url:  /v1/private/mbxgateway/order/place
+      headers:
+        accept: '*/*'
+        x-gray-env: ${env_flag}
+        x-user-id: ${user_id}
+      json:
+        $payload
+    validate:
+      - eq: ["status_code", 200, "response.status_code == 200"]
+      - custom: ["compare_response", "body", "${exceptedResult}"]

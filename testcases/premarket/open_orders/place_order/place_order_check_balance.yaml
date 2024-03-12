@@ -1,0 +1,47 @@
+config:
+  name: place order success check balance
+  base_url: ${get_service_host(PRE-MARKET)}
+  marks: ['premarket', 'qa', 'noparallelized']
+  meta:
+    description: place order success check balance
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/place
+    author: 'august.l'
+  variables:
+    x_user_id: ${user_id}
+    user_id: ${ENV(asset_user_id)}
+  parameters:
+    amount-asset-price-tradeType-userId-exceptedResult:
+      - [11, MANTA, 1, SELL, "${user_id}", {}]
+      - [1, MANTA, 11, BUY, "${user_id}",{}]
+teststeps:
+  # - name: 查询用户当前的可用和冻结
+
+  - name: 获取asset的信息
+    testcase: testcases/premarket/asset/get_asset.yaml
+    variables:
+      asset: MANTA
+      userId: ${user_id}
+    export:
+      - first_asset_info
+  - name: place order
+    testcase: testcases/premarket/open_orders/place_order/place_order.yaml
+    export:
+      - data
+    variables:
+      fee_rate: ${get_value_from_map($first_asset_info, makerFeeRate)}
+      maker_pledge_rate: ${get_value_from_map($first_asset_info, makerPledgeRate)}
+      freeze_amount_exp:  '{}*{}*(1+{})'
+      freeze_amount: ${calculate($freeze_amount_exp,$amount,$price,$fee_rate)}
+      quantity_exp: '{}*{}'
+      quantity: ${calculate($quantity_exp,$amount,*price)}
+      pledge_margin_exp: '{}*{}*{}'
+      pledge_margin: ${calculate($pledge_margin_exp,$amount,$price,$maker_pledge_rate)}
+    teardown_hooks:
+      - ${check_value($data,feeRate,$fee_rate)}
+      - ${check_value($data,freezeAmount,$freeze_amount)}
+      - ${check_value($data,pledgeMargin,$pledge_margin)}
+
+  
+    

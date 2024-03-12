@@ -1,0 +1,45 @@
+config:
+  name: 用户充值接口
+  base_url: ${get_service_host(TRANSFER)}
+  marks: ['transfer', 'qa']
+  meta:
+    description: 用户充值接口
+    service: cloud-rest
+    controller: user-asset-withdraw-controller
+    url: /mgmt/user/asset/deposit
+    author: 'august.l'    
+  variables:
+    tranId: ${get_tran_id()}
+    walletUserId: 10043264
+    amount: 1
+    ensureSuccess: true
+    source: autotest
+    asset: BNB
+    type: 11
+    userId: 10043264
+    info: autotest
+            
+teststeps:
+  - name: 钱包之间划转
+    request:
+      method: POST
+      url: /mgmt/user/asset/deposit
+      json: 
+        body: {
+          tranId: "${tranId}",
+          walletUserId: "${walletUserId}",
+          amount: "${amount}",
+          ensureSuccess: "${ensureSuccess}",
+          source: "${source}",
+          asset: "${asset}",
+          type: "${type}",
+          userId: "${userId}",
+          info: "${info}"
+        }
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+    validate:
+      - eq: ["status_code", 200, "response.status_code == 200"]
+      - custom: ["compare_response", "body", {"status": "OK"}]
+      - eq: ["body.data.status", "SUCCESS"]

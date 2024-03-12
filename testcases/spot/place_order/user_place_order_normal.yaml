@@ -1,0 +1,29 @@
+config:
+  name: 正常用户下单
+  base_url: ${get_service_host(CLOUD-MGS-SPOT)}
+  marks: ['premarket', 'qa']  
+  meta:
+    description: place order success check balance
+    service: pre-market
+    controller: open-order-controller
+    url: /openOrder/place
+    author: 'august.l'
+  variables:
+    user_id: ${ENV(asset_user_id)}
+  parameters:
+    desc-payload-exceptedResult:
+      - ["ban user下limit单", {"side":"SELL","symbol":"BTCUSDT","quantity":"0.001","price":"62228.3","type":"LIMIT","timeInForce":"GTC"},
+         {'success': True}]
+      - ["ban user下market单", {"side":"SELL","symbol":"BTCUSDT","quantity":"0.001","type":"MARKET"},
+         {'success': True}]
+      - ["ban user下stop limit单", {"side":"SELL","symbol":"BTCUSDT","quantity":"0.001","type":"STOP_LOSS_LIMIT","stopPrice":"62228.3","price":"68228.3","timeInForce":"GTC"},
+         {'success': True}]
+      
+teststeps:
+  # - name: 获取当前symbol价格
+  - name: $desc
+    testcase: testcases/api/cloud_mgs_spot/place.yaml
+    variables:
+      user_id: ${user_id}
+      payload: $payload
+      exceptedResult: $exceptedResult

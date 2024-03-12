@@ -14,6 +14,10 @@ config:
     amount-asset-price-tradeType-userId-exceptedResult:
       - [22, MANTA, 1, SELL, "${user_id_no_balance}", {"status": "ERROR","type": "GENERAL","code": "070010","errorData": "user balance insufficient"}]
       - [2, MANTA, 1, SELL, "${user_id_with_balance}", {'status': 'ERROR', 'type': 'GENERAL', 'code': '070024'}]
+      - [10, XAI, 1, SELL, "${user_id_with_balance}", {'status': 'ERROR', 'type': 'GENERAL', 'code': '070024'}]
+      - [8, PIXEL, 1, SELL, "${user_id_with_balance}", {'status': 'ERROR', 'type': 'GENERAL', 'code': '070024'}]
+      - [11, PIXEL, 1, SELL, "${user_id_with_balance}", {'status': 'OK'}]
+
 
 teststeps:
   - name: place order

@@ -1,0 +1,32 @@
+config:
+  name: open api 获取用户信息
+  base_url: ${get_service_host(CLOUD-REST)}
+  marks: ['cloud-rest', 'qa']
+  meta:
+    description: open api 获取用户信息
+    service: cloud-rest
+    controller: account end point
+    url: /api/v1/account
+    author: 'august.l'    
+  parameters:
+    api_key-api_secret-params-exceptedResult:
+      - [76785C48C6D722DB069A9668BA7D370FA66B34EF1BD50C1DD4FBCDDC77730880, 3A8A68210521BC3A934F474F6382D67226C5FF60FBB4F5C7F10D0AE63F6333D5, 
+          {}, {"userId": 10043264,"inviterId": null,"channel": null}]
+      - [D82F3B48D02C651DD2853D4BFC8E22DF0B2DD892427760E340BA411BCC9ED1D5, DB57F815716058036E5E11DCEA584605CAE7273C7B570873BBE0DF210D5FFAF6, 
+          {}, {"userId": 10049169,"inviterId": 10049154,"channel": "Normal"}]  
+      - [7400B0C5B2DB6E849D1ADA6E246F47DA39B4FB829F51F359ED297F26F1AA24E0, 5C2A14459DB45E6B5A9A10B78C3D3B26311870CE28077A78988571F96B714E2C, 
+          {}, {"userId": 10049178,"inviterId": 10049153,"channel": "Affiliate"}]          
+teststeps:
+  - name: 获取用户信息
+    setup_hooks:
+      - ${open_api_setup_hooks($request, $params,$api_secret)}
+    request:
+      method: GET
+      url: /api/v1/account
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+        X-MBX-APIKEY: $api_key
+    validate:
+      - eq: ["status_code", 200, "response.status_code == 200"]
+      - custom: ["compare_response", "body", "${exceptedResult}"]

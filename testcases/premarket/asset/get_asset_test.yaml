@@ -10,11 +10,11 @@ config:
     author: 'august.l'
   variables:
     asset_test_sql_info:
-      sql: select asset from asset_config order by id asc
+      sql: select asset from asset_config order by trade_end_time desc
       columns: ["asset"]
       database: pre-market
     asset_not_test_sql_info:
-      sql: select asset from asset_config where test <> 1
+      sql: select asset from asset_config where test <> 1 order by trade_end_time desc
       columns: ["asset"]
       database: pre-market
     asset_test_sql_info_result: ${run_sql_return_list($asset_test_sql_info)} 

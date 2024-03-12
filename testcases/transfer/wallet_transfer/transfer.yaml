@@ -1,0 +1,38 @@
+config:
+  name: 用户自身各钱包之间划转
+  base_url: ${get_service_host(TRANSFER)}
+  marks: ['transfer', 'qa']
+  meta:
+    description: 用户自身各钱包之间划转
+    service: cloud-rest
+    controller: wallet-transfer-wallet-transfer-controllerss
+    url: /wallet/transfer
+    author: 'august.l'    
+  variables:
+    kindType: MAIN_CARD
+    tranId: ${get_tran_id()}
+    userId: 10049576
+    asset: MANTA
+    amount: 1
+    autoTransfer: false 
+            
+teststeps:
+  - name: 钱包之间划转
+    request:
+      method: POST
+      url: /wallet/transfer
+      json: 
+        body: {
+          "kindType": "${kindType}",
+          "tranId": "${tranId}",
+          "userId": "${userId}",
+          "asset": "${asset}",
+          "amount": "${amount}",
+          "autoTransfer": "${autoTransfer}"
+        }
+      headers:
+        accept: '*/*'
+        x-gray-env: normal
+    validate:
+      - eq: ["status_code", 200, "response.status_code == 200"]
+      - custom: ["compare_response", "body", {"status": "OK"}]

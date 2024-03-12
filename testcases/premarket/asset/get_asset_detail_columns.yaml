@@ -11,9 +11,9 @@ config:
   variables:
     response_columns: ["asset", "assetAlias", "assetDecimal", 
                         "priceDecimal", "makerPledgeRate", "takerPledgeRate",
-                        "makerFeeRate", "takerFeeRate", "settleTime",
+                        "makerFeeRate", "takerFeeRate", "settleStartTime", "settleEndTime",
                         "tradeStartTime", "tradeEndTime", "description",
-                        "logoUrl", "projectUrl", "lpUrl", "test"
+                        "logoUrl", "projectUrl", "lpUrl", "test", "minNotional"
                       ]
 teststeps:
   - name: Get pre market asset columns
