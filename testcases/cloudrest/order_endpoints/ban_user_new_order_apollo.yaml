@@ -1,7 +1,7 @@
 config:
-  name: open api new order
+  name: 通过apollo黑名单禁止的的用户下单测试
   base_url: ${get_service_host(CLOUD-REST)}
-  marks: ['cloud-rest', 'qa']
+  marks: ['cloud_rest', 'qa', 'noparallelized']
   meta:
     description: open api new order
     service: cloud-rest
@@ -40,7 +40,7 @@ config:
             "newClientOrderId": "${get_tran_id()}",
           }, {"code": -1020,"msg": "This operation is not supported."}, 400]
 teststeps:
-  - name: 获取用户信息
+  - name: $desc
     setup_hooks:
       - ${open_api_setup_hooks($request, $params,$api_secret)}
     request:

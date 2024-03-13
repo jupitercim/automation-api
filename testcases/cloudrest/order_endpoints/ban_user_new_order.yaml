@@ -1,7 +1,7 @@
 config:
   name: open api new order
   base_url: ${get_service_host(CLOUD-REST)}
-  marks: ['cloud-rest', 'qa']
+  marks: ['cloud_rest', 'qa']
   meta:
     description: open api new order
     service: cloud-rest
